@@ -3,7 +3,7 @@
 #include <vector>
 
 Tree::Node::~Node() {
-	std::cout << "deleting Node with id " << id << "\n";
+	//std::cout << "deleting Node with id " << id << "\n";
 	for (auto child : children()) {
 		delete child;
 	}
@@ -12,7 +12,7 @@ Tree::Node::~Node() {
 
 Tree::Node::Node(Graph::NodeId id, Node *parent) : id(id), parent(parent) {}
 void Tree::Node::addChildren(Tree::Node* child) {
-	std::cout << "adding child with id " << child->id << " to parent with id " << id << "\n";
+	//std::cout << "adding child with id " << child->id << " to parent with id " << id << "\n";
 	_children.push_back(child);
 }
 
