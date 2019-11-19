@@ -14,6 +14,7 @@ class Tree {
 				void addChildren(Node* child);
 				const std::vector<Node*> &children() const;
 				Node *parent;
+				std::vector<int> word;
 				Node(Graph::NodeId id, Node *parent);
 				~Node();
 		};
@@ -23,7 +24,7 @@ class Tree {
 		~Tree();
 		Tree(Graph &g, Graph::Node root);
 		Tree();
-		std::vector<std::vector<Node*>> heightList();
+		std::vector<std::vector<Node*>>* heightList();
 		void printPreOrder();
 };
 

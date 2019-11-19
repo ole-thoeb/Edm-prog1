@@ -37,40 +37,19 @@ std::vector<Graph::Node> center (Graph &g) {
 	return leafs;
 }
 
-class Word {
+class IsmorphismData {
 public:
-	std::vector<int> chars;
-	void push_back(int c) {
-		chars.push_back(c);
-	}
-	Tree::Node *node;
-	int number;
-
-	bool operator == (Word &w) {
-		if (chars.size() != w.chars.size()) return false;
-
-		for (size_t i = 0; i < chars.size(); i++) {
-			if (chars[i] != w.chars[i]) return false;
-		}
-		return true;
-	}
-
-	bool operator != (Word &w) {
-		return !(*this == w);
-	}
-};
-
-struct IsmorphismData {
 	Tree *t;
-	std::vector<Word> w;
-	std::vector<int> f;
-	std::vector<std::vector<Tree::Node*>> heighList;
-	std::vector<Word> tempWords;
+	std::vector<int> &f;
+	std::vector<std::vector<Tree::Node*>> &heighList;
+	IsmorphismData(Tree *tree, std::vector<int> &f, std::vector<std::vector<Tree::Node*>> &hList) : t(tree), f(f), heighList(hList) {}
 };
 
 bool cleanupRet(IsmorphismData data[], size_t len, bool retVal) {
 	for (size_t i = 0; i < len; i++) {
 		delete data[i].t;
+		delete &data[i].heighList;
+		delete &data[i].f;
 	}
 	return retVal;
 }
@@ -78,18 +57,12 @@ bool cleanupRet(IsmorphismData data[], size_t len, bool retVal) {
 bool areIsomorph(Graph &t1, Graph::Node r1, Graph &t2, Graph::Node r2) {
 	if (t1.num_nodes() != t2.num_nodes()) return false;
 
-	IsmorphismData d1;
-	d1.t = new Tree(t1, r1);
-	d1.w = std::vector<Word>(t1.num_nodes());
-	d1.f = std::vector<int>(t1.num_nodes());
-	d1.heighList = d1.t->heightList();
+	Tree *tree1 = new Tree(t1, r1);
+	IsmorphismData d1(tree1, *(new std::vector<int>(t1.num_nodes())), *(tree1->heightList()));
 
-	IsmorphismData d2;
-	Tree tree2(t2, r2);
-	d2.t = new Tree(t2, r2);
-	d2.w = std::vector<Word>(t2.num_nodes());
-	d2.f = std::vector<int>(t2.num_nodes());
-	d2.heighList = d2.t->heightList();
+	Tree *tree2 = new Tree(t2, r2);
+	IsmorphismData d2(tree2, *(new std::vector<int>(t2.num_nodes())), *(tree2->heightList()));
+
 
 	IsmorphismData data[] = {d1, d2};
 
@@ -100,7 +73,7 @@ bool areIsomorph(Graph &t1, Graph::Node r1, Graph &t2, Graph::Node r2) {
 		
 		if (d1.heighList[h - 1].size() != d2.heighList[h - 1].size()) return cleanupRet(data, 2, false);
 	
-		for (auto d : data) {
+		for (auto &d : data) {
 			//algo line: 7
 
 			std::vector<int> localF = d.f;
@@ -110,39 +83,33 @@ bool areIsomorph(Graph &t1, Graph::Node r1, Graph &t2, Graph::Node r2) {
 		
 			//algo line: 8
 			for (auto node : d.heighList[h]) {
-				d.w[node->parent->id].push_back(d.f[node->id]);
-			}
-
-			//copy words from one level into new list
-			d.tempWords = std::vector<Word>(d.heighList[h - 1].size());
-			for (size_t i = 0; i < d.heighList[h - 1].size(); i++) {
-				Tree::Node *node = d.heighList[h- 1][i];
-				Word w = d.w[node->id];
-				w.node = node;
-				d.tempWords[i] = w;
+				node->parent->word.push_back(d.f[node->id]);
 			}
 
 			//algo line: 9
-			bucketsort(d.tempWords, d.heighList[h].size(), [](Word &w) { return w.chars.size(); }, [](Word &w, size_t i) {
-				long long index = w.chars.size() - i - 1;
+			bucketsort(d.heighList[h - 1], d.heighList[h].size(), [](Tree::Node *n) { return n->word.size(); }, [](Tree::Node *n, size_t i) {
+				long long index = n->word.size() - i - 1;
 				if (index < 0) return -1;
 				//std::cout << "id: " << w.node->id << "\n";
 				//for (auto c : w.chars) {
 				//	std::cout << c << ", ";
 				//}
 				//std::cout << "\n";
-				return w.chars[index];
+				return n->word[index];
 			});
 		}
 
-		for (size_t i = 0; i < d1.tempWords.size(); i++) {
-			if (d1.tempWords[i] != d2.tempWords[i]) return cleanupRet(data, 2, false);
+		for (size_t i = 0; i < d1.heighList[h - 1].size(); i++) {
+			if (d1.heighList[h - 1][i]->word != d2.heighList[h - 1][i]->word) {
+				return cleanupRet(data, 2, false);
+			}
 		}
 
 		for (auto &d : data) {
 			//maybe same words must have same number
-			for (size_t i = 0; i < d.tempWords.size(); i++) {
-				d.f[d.tempWords[i].node->id] = i;
+			for (size_t i = 0; i < d.heighList[h - 1].size(); i++) {
+				
+				d.f[d.heighList[h - 1][i]->id] = i;
 			}
 		}
 	}

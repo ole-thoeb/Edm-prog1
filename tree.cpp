@@ -55,23 +55,23 @@ void buildTree(Graph &g, std::vector<bool> &visited, Graph::Node *gN, Tree::Node
 
 //void _heightList(Tree::Node &node, std::vector<std::vector<Tree::Node>> &heighList, int depth);
 
-void _heightList(Tree::Node *node, std::vector<std::vector<Tree::Node*>> &heighList, int depth) {
+void _heightList(Tree::Node *node, std::vector<std::vector<Tree::Node*>> *heighList, int depth) {
 	//std::cout << "height " << depth << " with node " << node->id << "\n";
-	if (heighList.size() > depth) {
-		heighList[depth].push_back(node);
+	if (heighList->size() > depth) {
+		(*heighList)[depth].push_back(node);
 	} else {
 		//std::cout << "new level\n";
 		std::vector<Tree::Node*> innerList;
 		innerList.push_back(node);
-		heighList.push_back(innerList);
+		heighList->push_back(innerList);
 	}
 	for (auto child : node->children()) {
 		_heightList(child, heighList, depth + 1);
 	}
 }
 
-std::vector<std::vector<Tree::Node*>> Tree::heightList() {
-	std::vector<std::vector<Tree::Node*>> heighList;
+std::vector<std::vector<Tree::Node*>>* Tree::heightList() {
+	std::vector<std::vector<Tree::Node*>> *heighList = new std::vector<std::vector<Tree::Node*>>;
 	_heightList(root, heighList, 0);
 	return heighList;
 }
