@@ -12,7 +12,7 @@ inline void bucketsort(std::vector<T> &list, size_t maxNum, F_SIZE size, F_BY by
 			maxLen = s;
 		}
 	}
-	for (size_t i = 0; i < maxLen; i++) {
+	for (long i = maxLen -1; i >= 0; i--) {
 		std::vector<std::vector<T>> buckets(maxNum + 1); // 0 = empty word
 		for (auto &el : list) {
 			buckets[by(el, i) + 1].push_back(el);

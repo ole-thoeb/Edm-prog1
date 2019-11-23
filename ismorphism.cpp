@@ -88,14 +88,8 @@ bool areIsomorph(Graph &t1, Graph::Node r1, Graph &t2, Graph::Node r2) {
 
 			//algo line: 9
 			bucketsort(d.heighList[h - 1], d.heighList[h].size(), [](Tree::Node *n) { return n->word.size(); }, [](Tree::Node *n, size_t i) {
-				long long index = n->word.size() - i - 1;
-				if (index < 0) return -1;
-				//std::cout << "id: " << w.node->id << "\n";
-				//for (auto c : w.chars) {
-				//	std::cout << c << ", ";
-				//}
-				//std::cout << "\n";
-				return n->word[index];
+				if (i >= n->word.size()) return -1;
+				return n->word[i];
 			});
 		}
 
