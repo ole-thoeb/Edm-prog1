@@ -18,8 +18,8 @@ inline void bucketsort(std::vector<T> &list, size_t maxNum, F_SIZE size, F_BY by
 			buckets[by(el, i) + 1].push_back(el);
 		}
 		size_t index = 0;
-		for (auto bucket : buckets) {
-			for (auto element : bucket) {
+		for (auto &bucket : buckets) {
+			for (auto &element : bucket) {
 				list[index++] = element;
 			}
 		}

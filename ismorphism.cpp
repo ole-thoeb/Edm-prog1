@@ -106,10 +106,10 @@ bool areIsomorph(Graph &t1, Graph::Node r1, Graph &t2, Graph::Node r2) {
 		}
 
 		for (auto &d : data) {
-			//maybe same words must have same number
+			size_t index = 0;
 			for (size_t i = 0; i < d.heighList[h - 1].size(); i++) {
-				
-				d.f[d.heighList[h - 1][i]->id] = i;
+				if (i != 0 && d.heighList[h - 1][i - 1]->word != d.heighList[h - 1][i]->word) index++;
+				d.f[d.heighList[h - 1][i]->id] = index;
 			}
 		}
 	}
